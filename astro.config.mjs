@@ -12,10 +12,11 @@ export default defineConfig({
       title: 'PII Vault Docs',
       description:
         'Tài liệu hệ thống bảo vệ dữ liệu PII — hướng kết hợp DB-native + Masking & lớp Audit/Access-Control tập trung.',
-      // Song ngữ: tiếng Việt là mặc định, tiếng Anh là bản dịch
-      defaultLocale: 'vi',
+      // Song ngữ: tiếng Việt là mặc định (root locale, phục vụ tại /),
+      // tiếng Anh là bản dịch (phục vụ tại /en/).
+      defaultLocale: 'root',
       locales: {
-        vi: { label: 'Tiếng Việt', lang: 'vi' },
+        root: { label: 'Tiếng Việt', lang: 'vi' },
         en: { label: 'English', lang: 'en' },
       },
       social: {

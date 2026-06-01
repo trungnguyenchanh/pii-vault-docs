@@ -49,9 +49,11 @@ npm run preview      # xem thử bản build
 │       └── en/                # bản tiếng Anh
 │           ├── index.mdx
 │           └── guides/
-├── wrangler.toml              # cấu hình Cloudflare Pages
 └── .github/workflows/         # CI deploy (tùy chọn)
 ```
+
+> Dự án dùng **Cloudflare Pages** (web tĩnh), không cần `wrangler.toml`. Toàn bộ
+> cấu hình build đặt trong dashboard Pages — xem `DEPLOY.md`.
 
 ## Triển khai lên Cloudflare Pages / Deploy
 

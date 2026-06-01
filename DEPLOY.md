@@ -1,62 +1,86 @@
 # Hướng dẫn triển khai lên Cloudflare Pages
 
-Tài liệu này mô tả hai cách deploy: qua giao diện Cloudflare (khuyến nghị, đơn giản nhất) và qua GitHub Actions với Wrangler.
+> **Quan trọng — đây là dự án Cloudflare *Pages* (web tĩnh), KHÔNG phải Cloudflare *Workers*.**
+> Nếu build log báo lỗi đòi `main = "src/index.ts"` hoặc `[assets] directory`, nghĩa là
+> Cloudflare đang chạy nhầm `wrangler deploy` (chế độ Workers). Cách khắc phục ở mục
+> "Xử lý sự cố" bên dưới.
+
+Có hai cách deploy: qua giao diện Cloudflare (khuyến nghị) và qua GitHub Actions.
 
 ## Bước 0 — Đẩy mã nguồn lên Git
 
 ```bash
 cd pii-docs
-git init
-git add .
-git commit -m "chore: initial PII Vault docs (Astro Starlight, bilingual)"
-git branch -M main
 git remote add origin https://github.com/<your-org>/pii-vault-docs.git
 git push -u origin main
 ```
 
-## Cách A — Kết nối Git trên Cloudflare Pages (khuyến nghị)
+## Cách A — Kết nối Git trên Cloudflare Pages (KHUYẾN NGHỊ)
 
-1. Đăng nhập Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-2. Chọn repo `pii-vault-docs` vừa đẩy lên.
-3. Cấu hình build:
+1. Cloudflare Dashboard → **Workers & Pages** → **Create** → chọn tab **Pages**
+   → **Connect to Git**. (Phải chọn đúng tab **Pages**, không phải Workers.)
+2. Chọn repo `pii-vault-docs`.
+3. Cấu hình build (Build settings):
    - **Framework preset:** `Astro`
    - **Build command:** `npm run build`
    - **Build output directory:** `dist`
-   - **Node version:** đặt biến môi trường `NODE_VERSION` = `20` nếu cần.
-4. Bấm **Save and Deploy**. Cloudflare sẽ build và cấp một URL dạng `https://pii-vault-docs.pages.dev`.
-5. Mỗi lần `git push` lên nhánh `main`, Cloudflare tự build lại (CI/CD sẵn có).
+4. (Tùy chọn) thêm biến môi trường: **Settings → Environment variables**
+   - `NODE_VERSION` = `20`
+5. **Save and Deploy**. Cloudflare cấp URL `https://pii-vault-docs.pages.dev`.
+6. Mỗi lần `git push` lên `main`, Cloudflare tự build lại.
 
-> Sau khi có domain chính thức, cập nhật trường `site` trong `astro.config.mjs` cho đúng để sitemap và canonical URL chuẩn.
+> Dự án này KHÔNG cần `wrangler.toml`. Với Cloudflare Pages dùng kết nối Git,
+> toàn bộ cấu hình build nằm ở giao diện dashboard. Có một `wrangler.toml`
+> cấu hình kiểu Worker là nguyên nhân chính gây lỗi deploy.
 
-## Cách B — Deploy bằng GitHub Actions + Wrangler
+## Cách B — Deploy bằng GitHub Actions + Wrangler (Pages)
 
-Phù hợp khi muốn kiểm soát pipeline trong repo. Đã có sẵn file `.github/workflows/deploy.yml`.
+Đã có sẵn `.github/workflows/deploy.yml`. Workflow build ra `dist/` rồi gọi
+`wrangler pages deploy` (đúng chế độ Pages, không phải Workers).
 
-Cần tạo các secret trong GitHub repo (**Settings → Secrets and variables → Actions**):
+Tạo secret trong GitHub repo (**Settings → Secrets and variables → Actions**):
 
-- `CLOUDFLARE_API_TOKEN` — API token có quyền *Cloudflare Pages: Edit*.
-- `CLOUDFLARE_ACCOUNT_ID` — Account ID lấy trong Cloudflare Dashboard.
+- `CLOUDFLARE_API_TOKEN` — token có quyền **Cloudflare Pages: Edit**.
+- `CLOUDFLARE_ACCOUNT_ID` — Account ID trong Cloudflare Dashboard.
 
-Sau đó mỗi lần push lên `main`, workflow sẽ build và deploy bằng Wrangler.
+Lần đầu, tạo project Pages trống tên `pii-vault-docs` (hoặc để lệnh tự tạo):
 
-### Tạo Cloudflare API Token
-
-1. Cloudflare Dashboard → **My Profile** → **API Tokens** → **Create Token**.
-2. Dùng template **Edit Cloudflare Workers** hoặc tạo custom với quyền **Account → Cloudflare Pages → Edit**.
-3. Lưu token vào GitHub secret `CLOUDFLARE_API_TOKEN`.
+```bash
+npx wrangler pages project create pii-vault-docs --production-branch main
+```
 
 ## Kiểm tra build cục bộ trước khi deploy
 
 ```bash
 npm install
-npm run build
+npm run build      # phải tạo ra thư mục dist/
 npm run preview
 ```
 
-Nếu `npm run build` chạy sạch và `dist/` được tạo, deploy trên Cloudflare sẽ thành công tương tự.
+Nếu `npm run build` chạy sạch và có `dist/`, deploy trên Cloudflare sẽ tương tự.
 
-## Xử lý sự cố thường gặp
+## Xử lý sự cố
 
-- **Lỗi Node version:** đặt `NODE_VERSION=20` trong biến môi trường build của Pages.
-- **Trang trắng / 404 trên route con:** đảm bảo **Build output directory** là `dist`, không phải thư mục khác.
-- **Sitemap/URL sai:** kiểm tra trường `site` trong `astro.config.mjs`.
+### Lỗi: đòi `main = "src/index.ts"` hoặc `[assets] directory = "./dist"`
+Cloudflare đang chạy **`wrangler deploy`** (Workers) thay vì **Pages**. Nguyên nhân
+thường gặp và cách sửa:
+
+1. **Có `wrangler.toml` kiểu Worker trong repo** → đã gỡ bỏ trong bản này. Đảm bảo
+   repo của bạn KHÔNG còn `wrangler.toml`. Nếu muốn giữ, nội dung phải là Pages:
+   ```toml
+   name = "pii-vault-docs"
+   pages_build_output_dir = "dist"
+   ```
+   và lệnh deploy phải là `wrangler pages deploy dist`, KHÔNG phải `wrangler deploy`.
+2. **Tạo nhầm project Workers trên dashboard** → xóa và tạo lại bằng tab **Pages**
+   → **Connect to Git** (Cách A).
+3. **Build command sai** → phải là `npm run build`, output `dist`.
+
+### Lỗi Node version
+Đặt `NODE_VERSION=20` trong Environment variables của Pages.
+
+### Trang trắng / 404 ở route con
+Kiểm tra **Build output directory** = `dist`.
+
+### Sitemap/canonical URL sai
+Cập nhật trường `site` trong `astro.config.mjs` thành domain thật.
