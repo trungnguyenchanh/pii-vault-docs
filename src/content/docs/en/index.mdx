@@ -1,0 +1,55 @@
+---
+title: PII Data Protection System
+description: Design and implementation documentation for a PII protection system using the hybrid DB-native + Masking and centralized Audit/Access-Control approach.
+template: splash
+hero:
+  tagline: Protect customer data, control every access — designed for retail/e-commerce at 1M+ records.
+  actions:
+    - text: Start reading
+      link: /en/guides/01-de-xuat-kien-truc/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/your-org/pii-vault-docs
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Overview
+
+This documentation set describes a pragmatic approach to protecting customer Personally Identifiable Information (PII), focused on **preventing leaks** and **tracing their source** when incidents occur. The approach combines a database's built-in security features (encryption, masking) with a centralized audit and access-control layer.
+
+:::tip[Core philosophy]
+"You cannot patch a leak you cannot see." The first and most important investment is **visibility** — recording every access to PII in an immutable way.
+:::
+
+<CardGrid>
+  <Card title="1. Architecture Proposal" icon="open-book">
+    Solution positioning, the two-pillar architecture, and the overall roadmap.
+    [Read →](/en/guides/01-de-xuat-kien-truc/)
+  </Card>
+  <Card title="2. Implementation Playbook" icon="rocket">
+    Detailed per-phase how-to, tools, and completion criteria.
+    [Read →](/en/guides/02-so-tay-trien-khai/)
+  </Card>
+  <Card title="3. Functional Spec" icon="puzzle">
+    Eight functional modules and end-to-end business flows.
+    [Read →](/en/guides/03-dac-ta-nghiep-vu/)
+  </Card>
+  <Card title="4. Technical Design" icon="setting">
+    Data schemas, API contracts, and design decisions for M1–M8.
+    [Read →](/en/guides/04-thiet-ke-ky-thuat/)
+  </Card>
+  <Card title="5. System Analysis" icon="list-format">
+    Work breakdown by role (BA, Dev, DB, QC, DevOps, Security).
+    [Read →](/en/guides/05-phan-tich-he-thong/)
+  </Card>
+  <Card title="Compliance" icon="approve-check">
+    Aligned with Decree 13/2023/ND-CP on personal data protection.
+  </Card>
+</CardGrid>
+
+## Note
+
+This documentation is a design reference. Specific technical decisions should be reviewed against real infrastructure. This is not legal advice; alignment with Decree 13/2023 should involve your legal team.
