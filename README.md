@@ -69,6 +69,17 @@ Tóm tắt: trong Cloudflare Pages, tạo project mới kết nối với repo G
 
 Bộ tài liệu mang tính tham chiếu thiết kế, không phải tư vấn pháp lý. Việc đối chiếu Nghị định 13/2023/NĐ-CP nên có ý kiến bộ phận pháp chế.
 
+
+## Skeleton code
+
+Repo kèm bộ mã khởi đầu thực tế trong `skeleton/`:
+
+- `skeleton/db/` — script SQL (bảng `alert`, `incident`, `approval_request`, `admin_audit`, index, materialized view).
+- `skeleton/api-go/` — Go Admin API (chi-router, JWT/RBAC middleware, handler F1–F4, repo pgx, self-audit hash-chain).
+- `skeleton/web-react/` — React SPA (Vite + TS, React Router, TanStack Query, Recharts; các trang Dashboard/Logs/Alerts/Approvals/Roles).
+
+Xem `skeleton/README.md` để chạy thử cục bộ. Các chỗ cần hiện thực được đánh dấu `TODO(<mã task>)`.
+
 ## License
 
 [MIT](./LICENSE)

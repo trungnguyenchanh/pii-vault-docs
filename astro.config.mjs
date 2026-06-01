@@ -39,6 +39,7 @@ export default defineConfig({
             { slug: 'guides/03-dac-ta-nghiep-vu' },
             { slug: 'guides/04-thiet-ke-ky-thuat' },
             { slug: 'guides/05-phan-tich-he-thong' },
+            { slug: 'guides/06-trang-admin-log' },
           ],
         },
       ],
